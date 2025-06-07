@@ -19,6 +19,26 @@ public class Employee {
     private String middleName;
     private Integer salary;
 
+    @Transient
+    public String getFullName() {
+        StringBuilder fullName = new StringBuilder();
+
+        if (lastName != null) {
+            fullName.append(lastName).append(" ");
+        }
+        if (firstName != null) {
+            fullName.append(firstName).append(" ");
+        }
+        if (middleName != null) {
+            fullName.append(middleName);
+        }
+
+        return fullName.toString().trim();
+    }
+
     @OneToMany(mappedBy = "employee")
     private List<Task> tasks;
+
+    @OneToOne(mappedBy = "employee")
+    private User user;
 }

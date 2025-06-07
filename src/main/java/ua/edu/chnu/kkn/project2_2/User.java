@@ -16,4 +16,8 @@ public class User {
     private String username;
     private String password;
     private String role;
+
+    @OneToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 }
