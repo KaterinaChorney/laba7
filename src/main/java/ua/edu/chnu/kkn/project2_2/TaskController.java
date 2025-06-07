@@ -1,5 +1,7 @@
 package ua.edu.chnu.kkn.project2_2;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ua.edu.chnu.kkn.project2_2.EmployeeRepository;
 import ua.edu.chnu.kkn.project2_2.TaskRepository;
 import org.springframework.stereotype.Controller;
@@ -25,12 +27,14 @@ public class TaskController {
     @GetMapping("/tasks")
     public String getTasks(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
-        return "tasks";
-    }
 
-    @GetMapping("/admin/tasks/create")
-    public String showCreateTaskForm(Model model) {
-        model.addAttribute("employees", employeeRepository.findAll());
-        return "admin/createTask";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String role = auth.getAuthorities().stream()
+                .findFirst()
+                .map(a -> a.getAuthority())
+                .orElse("");
+        model.addAttribute("role", role);
+
+        return "tasks";
     }
 }

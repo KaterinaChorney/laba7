@@ -3,11 +3,15 @@
 @import ua.edu.chnu.kkn.project2_2.Task
 
 @param java.util.List<ua.edu.chnu.kkn.project2_2.Task> tasks
+@param String role
 
 !{var formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");}
 
 <h1>Список завдань</h1>
-
+@if (role.equals("ROLE_ADMIN"))
+    <br>
+    <a href="/admin/tasks/create">Створити завдання</a>
+@endif
 <ul>
     @for (var task : tasks)
         <li>

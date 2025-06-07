@@ -14,8 +14,12 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        Authentication authentication)
-            throws ServletException, IOException {
+                                        Authentication authentication) throws IOException, ServletException {
+
+        System.out.println("== LOGIN SUCCESS: " + authentication.getName());
+        System.out.println("== AUTHORITIES: " + authentication.getAuthorities());
+
         response.sendRedirect("/index");
     }
+
 }

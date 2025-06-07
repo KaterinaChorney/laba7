@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(login -> login
                         .loginPage("/login")
                         .successHandler(successHandler)
