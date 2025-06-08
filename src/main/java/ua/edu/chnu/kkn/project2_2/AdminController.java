@@ -86,6 +86,13 @@ public class AdminController {
         return "admin/editTask";
     }
 
+    @PostMapping("/tasks/delete")
+    public String deleteTask(@RequestParam Long taskId) {
+        taskRepository.deleteById(taskId);
+        return "redirect:/tasks";
+    }
+
+
     @PostMapping("/tasks/edit")
     public String editTask(
             @RequestParam Long taskId,
