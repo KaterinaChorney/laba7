@@ -17,6 +17,14 @@ public class TaskTypes {
     private String description;
     private Integer dailyPayment;
 
+    public Long getTaskTypeId() {
+        return taskTypeId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     @OneToMany(mappedBy = "taskType")
     private List<Task> tasks;
 }

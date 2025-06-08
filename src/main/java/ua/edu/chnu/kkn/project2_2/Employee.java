@@ -35,6 +35,9 @@ public class Employee {
 
         return fullName.toString().trim();
     }
+    public Long getEmployeeId() {
+        return employeeId;
+    }
 
     @OneToMany(mappedBy = "employee")
     private List<Task> tasks;

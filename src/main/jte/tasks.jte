@@ -23,6 +23,9 @@
             @else
                 Дата завершення: —
             @endif
+            @if (role.equals("ROLE_ADMIN"))
+                <br><a href="/admin/tasks/edit/${task.getTaskId()}">Редагувати</a>
+            @endif
         </li>
     @endfor
 </ul>
