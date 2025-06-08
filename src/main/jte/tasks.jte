@@ -4,17 +4,53 @@
 
 @param java.util.List<ua.edu.chnu.kkn.project2_2.Task> tasks
 @param String role
+@param String sortBy
 
 !{var formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");}
 
 <h1>Список завдань</h1>
+<form method="get" action="/tasks" class="mb-3">
+    <label for="sortBy">Сортувати за:</label>
+    <select name="sortBy" id="sortBy" onchange="this.form.submit()">
+        <option value="">---</option>
+        @if (sortBy != null)
+            @if (sortBy.equals("dateAsc"))
+                <option value="dateAsc" selected>Дата ↑</option>
+            @else
+                <option value="dateAsc">Дата ↑</option>
+            @endif
+
+            @if (sortBy.equals("dateDesc"))
+                <option value="dateDesc" selected>Дата ↓</option>
+            @else
+                <option value="dateDesc">Дата ↓</option>
+            @endif
+
+            @if (sortBy.equals("nameAsc"))
+                <option value="nameAsc" selected>Прізвище A→Я</option>
+            @else
+                <option value="nameAsc">Прізвище A→Я</option>
+            @endif
+
+            @if (sortBy.equals("nameDesc"))
+                <option value="nameDesc" selected>Прізвище Я→A</option>
+            @else
+                <option value="nameDesc">Прізвище Я→A</option>
+            @endif
+        @else
+            <option value="dateAsc">Дата ↑</option>
+            <option value="dateDesc">Дата ↓</option>
+            <option value="nameAsc">Прізвище A→Я</option>
+            <option value="nameDesc">Прізвище Я→A</option>
+        @endif
+    </select>
+</form>
 
 @if (role.equals("ROLE_ADMIN"))
-    <br>
-    <a href="/admin/tasks/create">Створити завдання</a>
+    <a href="/admin/tasks/create" class="btn btn-primary mb-3">Створити завдання</a>
 @endif
 
-<!-- Bootstrap модальне вікно -->
+<!-- Модальне вікно -->
 <div class="modal" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -38,23 +74,22 @@
 
 <ul>
     @for (var task : tasks)
-        <li>
-            Працівник: ${task.getEmployee().getLastName()} ${task.getEmployee().getFirstName()}<br>
-            Тип роботи: ${task.getTaskType().getDescription()}<br>
-            Дата початку: ${task.getStartDate().format(formatter)}<br>
+        <li class="mb-3">
+            <strong>Працівник:</strong> ${task.getEmployee().getLastName()} ${task.getEmployee().getFirstName()}<br>
+            <strong>Тип роботи:</strong> ${task.getTaskType().getDescription()}<br>
+            <strong>Дата початку:</strong> ${task.getStartDate().format(formatter)}<br>
             @if (task.getEndDate() != null)
-                Дата завершення: ${task.getEndDate().format(formatter)}
+                <strong>Дата завершення:</strong> ${task.getEndDate().format(formatter)}
             @else
-                Дата завершення: —
+                <strong>Дата завершення:</strong> —
             @endif
 
             @if (role.equals("ROLE_ADMIN"))
                 <br>
-                <a href="/admin/tasks/edit/${task.getTaskId()}">Редагувати</a>
+                <a href="/admin/tasks/edit/${task.getTaskId()}" class="btn btn-sm btn-outline-primary mt-2">Редагувати</a>
 
-                <!-- Кнопка, що відкриває модальне вікно -->
                 <button type="button"
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-sm mt-2"
                         onclick="confirmDelete(${task.getTaskId()})"
                         data-bs-toggle="modal"
                         data-bs-target="#deleteModal">
@@ -70,5 +105,6 @@
         document.getElementById('taskToDeleteId').value = taskId;
     }
 </script>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

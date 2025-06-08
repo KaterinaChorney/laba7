@@ -2,11 +2,14 @@ package ua.edu.chnu.kkn.project2_2;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestParam;
 import ua.edu.chnu.kkn.project2_2.EmployeeRepository;
 import ua.edu.chnu.kkn.project2_2.TaskRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Controller
 public class TaskController {
@@ -25,14 +28,29 @@ public class TaskController {
         }
 
     @GetMapping("/tasks")
-    public String getTasks(Model model) {
-        model.addAttribute("tasks", taskRepository.findAll());
+    public String viewTasks(@RequestParam(required = false) String sortBy, Model model) {
+        List<Task> tasks;
+
+        if ("dateAsc".equals(sortBy)) {
+            tasks = taskRepository.findAllByOrderByStartDateAsc();
+        } else if ("dateDesc".equals(sortBy)) {
+            tasks = taskRepository.findAllByOrderByStartDateDesc();
+        } else if ("nameAsc".equals(sortBy)) {
+            tasks = taskRepository.findAllOrderByEmployeeLastNameAsc();
+        } else if ("nameDesc".equals(sortBy)) {
+            tasks = taskRepository.findAllOrderByEmployeeLastNameDesc();
+        } else {
+            tasks = taskRepository.findAll();
+        }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String role = auth.getAuthorities().stream()
                 .findFirst()
                 .map(a -> a.getAuthority())
                 .orElse("");
+
+        model.addAttribute("tasks", tasks);
+        model.addAttribute("sortBy", sortBy);
         model.addAttribute("role", role);
 
         return "tasks";
