@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -17,7 +16,7 @@ public class AdminController {
     private final TaskRepository taskRepository;
     private final TaskTypesRepository taskTypesRepository;
 
-    public AdminController(EmployeeRepository employeeRepository, TaskRepository taskRepository,TaskTypesRepository taskTypesRepository) {
+    public AdminController(EmployeeRepository employeeRepository, TaskRepository taskRepository, TaskTypesRepository taskTypesRepository) {
         this.employeeRepository = employeeRepository;
         this.taskRepository = taskRepository;
         this.taskTypesRepository = taskTypesRepository;
@@ -43,6 +42,80 @@ public class AdminController {
     public String createEmployee(@ModelAttribute Employee employee) {
         employeeRepository.save(employee);
         return "redirect:/employees";
+    }
+
+    @GetMapping("/employees/edit/{employeeId}")
+    public String showEditEmployeeForm(@PathVariable Long employeeId, Model model) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        model.addAttribute("employee", employee);
+        addRoleToModel(model);
+        return "admin/editEmployee";
+    }
+
+    @PostMapping("/employees/edit")
+    public String editEmployee(@ModelAttribute Employee employee) {
+        employeeRepository.save(employee);
+        return "redirect:/employees";
+    }
+
+    @PostMapping("/employees/delete")
+    public String deleteEmployee(@RequestParam Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // Видаляємо всі завдання працівника
+        taskRepository.deleteAll(taskRepository.findByEmployee(employee));
+
+        // Тепер видаляємо працівника
+        employeeRepository.delete(employee);
+
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/tasktypes/create")
+    public String showCreateTaskTypeForm(Model model) {
+        model.addAttribute("taskType", new TaskTypes());
+        addRoleToModel(model);
+        return "admin/createTaskType";
+    }
+
+    @PostMapping("/tasktypes/create")
+    public String createTaskType(@RequestParam String description,
+                                 @RequestParam Integer dailyPayment) {
+        TaskTypes taskType = new TaskTypes();
+        taskType.setDescription(description);
+        taskType.setDailyPayment(dailyPayment);
+        taskTypesRepository.save(taskType);
+        return "redirect:/tasktypes";
+    }
+
+    @GetMapping("/tasktypes/edit/{taskTypeId}")
+    public String showEditTaskTypeForm(@PathVariable Long taskTypeId, Model model) {
+        TaskTypes taskType = taskTypesRepository.findById(taskTypeId)
+                .orElseThrow(() -> new RuntimeException("TaskType not found"));
+        model.addAttribute("taskType", taskType);
+        addRoleToModel(model);
+        return "admin/editTaskType";
+    }
+
+    @PostMapping("/tasktypes/edit")
+    public String editTaskType(@RequestParam Long taskTypeId,
+                               @RequestParam String description,
+                               @RequestParam Integer dailyPayment) {
+        TaskTypes taskType = taskTypesRepository.findById(taskTypeId)
+                .orElseThrow(() -> new RuntimeException("Task type not found"));
+        taskType.setDescription(description);
+        taskType.setDailyPayment(dailyPayment);
+        taskTypesRepository.save(taskType);
+        return "redirect:/tasktypes";
+    }
+
+
+    @PostMapping("/tasktypes/delete")
+    public String deleteTaskType(@RequestParam Long taskTypeId) {
+        taskTypesRepository.deleteById(taskTypeId);
+        return "redirect:/tasktypes";
     }
 
     @GetMapping("/tasks/create")
@@ -86,13 +159,6 @@ public class AdminController {
         return "admin/editTask";
     }
 
-    @PostMapping("/tasks/delete")
-    public String deleteTask(@RequestParam Long taskId) {
-        taskRepository.deleteById(taskId);
-        return "redirect:/tasks";
-    }
-
-
     @PostMapping("/tasks/edit")
     public String editTask(
             @RequestParam Long taskId,
@@ -122,6 +188,12 @@ public class AdminController {
 
         taskRepository.save(task);
 
+        return "redirect:/tasks";
+    }
+
+    @PostMapping("/tasks/delete")
+    public String deleteTask(@RequestParam Long taskId) {
+        taskRepository.deleteById(taskId);
         return "redirect:/tasks";
     }
 }

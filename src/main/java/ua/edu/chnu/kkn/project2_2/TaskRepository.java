@@ -12,9 +12,17 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findAllByOrderByStartDateDesc();
 
+    List<Task> findByEmployee(Employee employee);
+
     @Query("SELECT t FROM Task t ORDER BY t.employee.lastName ASC")
     List<Task> findAllOrderByEmployeeLastNameAsc();
 
     @Query("SELECT t FROM Task t ORDER BY t.employee.lastName DESC")
     List<Task> findAllOrderByEmployeeLastNameDesc();
+
+    @Query("SELECT t FROM Task t WHERE " +
+            "LOWER(t.employee.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(t.employee.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(t.taskType.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Task> findByKeyword(@Param("keyword") String keyword);
 }

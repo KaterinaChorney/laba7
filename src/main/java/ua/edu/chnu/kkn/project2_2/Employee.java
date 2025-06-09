@@ -39,9 +39,10 @@ public class Employee {
         return employeeId;
     }
 
+    public String getLastName() {
+       return lastName;
+    }
+
     @OneToMany(mappedBy = "employee")
     private List<Task> tasks;
-
-    @OneToOne(mappedBy = "employee")
-    private User user;
 }
